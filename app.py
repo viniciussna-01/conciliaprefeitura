@@ -303,6 +303,7 @@ with col_head1:
     st.markdown('Faça o upload dos dois arquivos e clique em **Conciliar** para identificar divergências automaticamente.')
     st.subheader('Feito por: Vinícius Sena')
     st.markdown('Qualquer erro ou problema, pode me chamar no TEAMS!')
+    st.markdown('Funcionando 100% com a prefeitura de: SP / ')
 with col_head2:
     st.write(f"**Usuário:** {st.session_state['nome_exibicao']}")
     st.write(f"**Perfil:** {st.session_state['perfil']}")
