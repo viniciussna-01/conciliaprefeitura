@@ -434,7 +434,7 @@ if aba == 'Conciliação':
         st.subheader('📊 Resumo da Conciliação')
         c1, c2, c3, c4, c5 = st.columns(5)
         with c1:
-            st.markdown(f"<div class='metric-card card-azul'><div class='card-titulo'>Total de NFEs</div><div class='card-valor'>{total}</div></div>", unsafe_allow_html=True)
+            st.markdown(f"<div class='metric-card card-azul'><div class='card-titulo'>Total de NFEs</div><div class='card-valor' style='color:#003f8a'>{total}</div></div>", unsafe_allow_html=True)
         with c2:
             st.markdown(f"<div class='metric-card card-verde'><div class='card-titulo'>Conciliadas</div><div class='card-valor' style='color:#28a745'>{ok}</div></div>", unsafe_allow_html=True)
         with c3:
