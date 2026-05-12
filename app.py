@@ -262,21 +262,34 @@ def processar_omie(file):
     return agg
 
 def processar_pref(file):
+    """Processa arquivo CSV da Prefeitura com validações robustas."""
     try:
-        df = pd.read_csv(file, encoding='latin-1', sep=None, engine='python')
+        df = pd.read_csv(file, encoding='latin-1', sep=';')
     except Exception:
         try:
-            df = pd.read_csv(file, encoding='utf-8', sep=None, engine='python')
+            file.seek(0)
+            df = pd.read_csv(file, encoding='utf-8', sep=';')
         except Exception as e:
-            raise ValueError(f'Não consegui ler o arquivo CSV da Prefeitura. Erro: {e}')
+            raise ValueError(f"Não consegui ler o arquivo CSV da Prefeitura. Erro: {e}")
+
+    df.columns = [str(c).strip() for c in df.columns]
+
+    # Remove linhas-resumo/total
+    if 'Tipo de Registro' in df.columns:
+        df = df[df['Tipo de Registro'].astype(str).str.strip().str.lower() != 'total'].copy()
+
     cols = resolve_columns(df, PREF_REQUIRED_COLUMNS, 'Prefeitura')
+
     df = df[df[cols['NFE']].notna()].copy()
     df[cols['NFE']] = pd.to_numeric(df[cols['NFE']], errors='coerce')
     df = df[df[cols['NFE']].notna()].copy()
+
     if len(df) == 0:
-        raise ValueError('Nenhuma NFE válida encontrada no arquivo da Prefeitura')
+        raise ValueError("Nenhuma NFE válida encontrada no arquivo da Prefeitura")
+
     df[cols['NFE']] = df[cols['NFE']].astype(int)
     df[cols['Valor_Pref']] = df[cols['Valor_Pref']].apply(clean_valor).astype(float)
+
     return df[[cols['NFE'], cols['Nome_Pref'], cols['Valor_Pref']]].rename(columns={
         cols['NFE']: 'NFE',
         cols['Nome_Pref']: 'Nome_Pref',
