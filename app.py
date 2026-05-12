@@ -208,7 +208,7 @@ def to_excel(df):
 st.title("🔍 Conciliação OMIE × Prefeitura")
 st.markdown("Faça o upload dos dois arquivos e clique em **Conciliar** para identificar divergências automaticamente.")
 st.subheader("Feito por: Vinícius Sena")
-st.markdown("Qualquer Erro ou problema, pode me chamar no TEAMS!")
+st.markdown("Qualquer Erro ou Problema, pode me chamar no teams!")
 
 st.divider()
 
