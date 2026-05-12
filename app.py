@@ -194,7 +194,13 @@ def resolve_columns(df, required_map, source_name):
 
 OMIE_REQUIRED_COLUMNS = {
     'NFE': ['Número da NFS-e', 'Numero da NFS-e', 'NFS-e', 'NFS e', 'Numero NFS-e'],
-    'Nome_OMIE': ['Cliente (Nome Fantasia)', 'Cliente', 'Nome Fantasia', 'Razão Social'],
+    'Nome_OMIE': [
+        'Cliente (Nome Fantasia)',
+        'Cliente (Razão Social)',
+        'Cliente',
+        'Nome Fantasia',
+        'Razão Social'
+    ],
     'Valor_OMIE': ['Valor Líquido', 'Valor Liquido', 'Valor', 'Valor Total'],
 }
 
@@ -205,21 +211,54 @@ PREF_REQUIRED_COLUMNS = {
 }
 
 def processar_omie(file):
-    df = pd.read_excel(file)
+    """Processa arquivo Excel do OMIE mesmo quando o cabeçalho começa algumas linhas abaixo."""
+    raw = pd.read_excel(file, header=None)
+    
+    header_row = None
+    for i in range(min(15, len(raw))):
+        row_values = [str(v).strip() for v in raw.iloc[i].tolist()]
+        normalized = [normalize_col_name(v) for v in row_values]
+        
+        has_nfe = normalize_col_name('Número da NFS-e') in normalized
+        has_nome = (
+            normalize_col_name('Cliente (Nome Fantasia)') in normalized or
+            normalize_col_name('Cliente (Razão Social)') in normalized or
+            normalize_col_name('Cliente') in normalized
+        )
+        has_valor = normalize_col_name('Valor Líquido') in normalized
+        
+        if has_nfe and has_nome and has_valor:
+            header_row = i
+            break
+
+    if header_row is None:
+        raise ValueError(
+            "Arquivo OMIE: não encontrei a linha de cabeçalho com Número da NFS-e, Cliente e Valor Líquido."
+        )
+
+    file.seek(0)
+    df = pd.read_excel(file, header=header_row)
+
     cols = resolve_columns(df, OMIE_REQUIRED_COLUMNS, 'OMIE')
+
     df = df[df[cols['NFE']].notna()].copy()
     df[cols['NFE']] = pd.to_numeric(df[cols['NFE']], errors='coerce')
     df = df[df[cols['NFE']].notna()].copy()
+
     if len(df) == 0:
-        raise ValueError('Nenhuma NFE válida encontrada no arquivo OMIE')
+        raise ValueError("Nenhuma NFE válida encontrada no arquivo OMIE")
+
     df[cols['NFE']] = df[cols['NFE']].astype(int)
     df[cols['Valor_OMIE']] = pd.to_numeric(df[cols['Valor_OMIE']], errors='coerce').fillna(0).astype(float)
+
     agg = df.groupby(cols['NFE']).agg(
         Nome_OMIE=(cols['Nome_OMIE'], 'first'),
         Valor_OMIE=(cols['Valor_OMIE'], 'sum'),
     ).reset_index()
+
     agg.columns = ['NFE', 'Nome_OMIE', 'Valor_OMIE']
     agg['Valor_OMIE'] = agg['Valor_OMIE'].fillna(0).astype(float)
+
     return agg
 
 def processar_pref(file):
