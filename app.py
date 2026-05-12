@@ -275,13 +275,17 @@ def processar_omie(file):
 def processar_pref(file):
     """Processa arquivo CSV da Prefeitura com validações robustas."""
     try:
-        df = pd.read_csv(file, encoding='latin-1', sep=';')
+        df = pd.read_csv(file, encoding='utf-8-sig', sep=';')
     except Exception:
         try:
             file.seek(0)
-            df = pd.read_csv(file, encoding='utf-8', sep=';')
-        except Exception as e:
-            raise ValueError(f"Não consegui ler o arquivo CSV da Prefeitura. Erro: {e}")
+            df = pd.read_csv(file, encoding='latin-1', sep=';')
+        except Exception:
+            try:
+                file.seek(0)
+                df = pd.read_csv(file, encoding='utf-8', sep=';')
+            except Exception as e:
+                raise ValueError(f"Não consegui ler o arquivo CSV da Prefeitura. Erro: {e}")
 
     df.columns = [str(c).strip() for c in df.columns]
 
@@ -306,7 +310,6 @@ def processar_pref(file):
         cols['Nome_Pref']: 'Nome_Pref',
         cols['Valor_Pref']: 'Valor_Pref'
     })
-
 def conciliar(omie, pref):
     if omie.empty or pref.empty:
         raise ValueError('Um dos arquivos após processamento ficou vazio')
