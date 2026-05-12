@@ -365,9 +365,9 @@ if not st.session_state['logado']:
 
 col_head1, col_head2 = st.columns([4, 1])
 with col_head1:
-    st.title('🔍 Conciliação OMIE × Prefeitura')
+    st.title('🔍 CONCILIA PREFEITURA')
     st.markdown('Faça o upload dos dois arquivos e clique em **Conciliar** para identificar divergências automaticamente.')
-    st.subheader('Feito por: Vinícius Sena')
+    st.subheader('Feito por: Vinícius Magalhães de Souza Sena')
     st.markdown('Qualquer erro ou problema, pode me chamar no TEAMS!')
     st.markdown('Funcionando 100% com a prefeitura de: **SP** / **Novo formato nacional (nNFSe)**')
 with col_head2:
