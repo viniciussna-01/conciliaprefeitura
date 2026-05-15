@@ -80,22 +80,36 @@ def autenticar(username, password):
             'senha': st.secrets['auth']['admin_password'],
             'perfil': 'admin'
         },
-        st.secrets['auth']['user1_user']: {
-            'nome_exibicao': st.secrets['auth']['user1_name'],
-            'senha': st.secrets['auth']['user1_password'],
+
+        st.secrets['auth']['daniela_user']: {
+            'nome_exibicao': 'Daniela',
+            'senha': st.secrets['auth']['daniela_password'],
             'perfil': 'user'
         },
-        st.secrets['auth']['user2_user']: {
-            'nome_exibicao': st.secrets['auth']['user2_name'],
-            'senha': st.secrets['auth']['user2_password'],
+
+        st.secrets['auth']['victor_user']: {
+            'nome_exibicao': 'Victor',
+            'senha': st.secrets['auth']['victor_password'],
             'perfil': 'user'
         },
-        st.secrets['auth']['user3_user']: {
-            'nome_exibicao': st.secrets['auth']['user3_name'],
-            'senha': st.secrets['auth']['user3_password'],
+
+        st.secrets['auth']['suelen_user']: {
+            'nome_exibicao': 'Suelen',
+            'senha': st.secrets['auth']['suelen_password'],
             'perfil': 'user'
         },
     }
+
+    user = usuarios.get(username)
+
+    if user and password == user['senha']:
+        return {
+            'username': username,
+            'nome_exibicao': user['nome_exibicao'],
+            'perfil': user['perfil']
+        }
+
+    return None
 
     user = usuarios.get(username)
     if user and password == user['senha']:
@@ -363,14 +377,37 @@ if not st.session_state['logado']:
     st.markdown('Acesse com seu usuário para usar o sistema.')
 
     with st.form('login_form'):
-        perfil_login = st.selectbox('Selecione o acesso', ['Administrador', 'Equipe'])
+    
+        usuarios_disponiveis = [
+            st.secrets['auth']['admin_user'],
+            st.secrets['auth']['daniela_user'],
+            st.secrets['auth']['victor_user'],
+            st.secrets['auth']['suelen_user'],
+        ]
+    
+        username = st.selectbox(
+            'Selecione o usuário',
+            usuarios_disponiveis
+        )
+    
         password = st.text_input('Senha', type='password')
-        submit = st.form_submit_button('Entrar', use_container_width=True)
-
+    
+        submit = st.form_submit_button(
+            'Entrar',
+            use_container_width=True
+        )
+    
     if submit:
-        username = 'vinicius' if perfil_login == 'Administrador' else 'Equipe'
         user = autenticar(username, password)
 
+    if user:
+        st.session_state['logado'] = True
+        st.session_state['usuario'] = user['username']
+        st.session_state['nome_exibicao'] = user['nome_exibicao']
+        st.session_state['perfil'] = user['perfil']
+        st.rerun()
+    else:
+        st.error('Usuário ou senha inválidos.')
         if user:
             st.session_state['logado'] = True
             st.session_state['usuario'] = user['username']
