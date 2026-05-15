@@ -75,6 +75,7 @@ def sb_select(table_name, query='select=*'):
 
 def autenticar(username, password):
     usuarios = {
+
         st.secrets['auth']['admin_user']: {
             'nome_exibicao': st.secrets['auth']['admin_name'],
             'senha': st.secrets['auth']['admin_password'],
@@ -109,15 +110,6 @@ def autenticar(username, password):
             'perfil': user['perfil']
         }
 
-    return None
-
-    user = usuarios.get(username)
-    if user and password == user['senha']:
-        return {
-            'username': username,
-            'nome_exibicao': user['nome_exibicao'],
-            'perfil': user['perfil']
-        }
     return None
 
 def salvar_historico(resultado, usuario, perfil, empresa, arquivo_omie, arquivo_pref):
