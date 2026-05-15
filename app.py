@@ -74,18 +74,36 @@ def sb_select(table_name, query='select=*'):
     return resp.json()
 
 def autenticar(username, password):
-    admin_user = st.secrets['auth']['admin_user']
-    admin_name = st.secrets['auth']['admin_name']
-    admin_password = st.secrets['auth']['admin_password']
+    usuarios = {
+        st.secrets['auth']['admin_user']: {
+            'nome_exibicao': st.secrets['auth']['admin_name'],
+            'senha': st.secrets['auth']['admin_password'],
+            'perfil': 'admin'
+        },
+        st.secrets['auth']['user1_user']: {
+            'nome_exibicao': st.secrets['auth']['user1_name'],
+            'senha': st.secrets['auth']['user1_password'],
+            'perfil': 'user'
+        },
+        st.secrets['auth']['user2_user']: {
+            'nome_exibicao': st.secrets['auth']['user2_name'],
+            'senha': st.secrets['auth']['user2_password'],
+            'perfil': 'user'
+        },
+        st.secrets['auth']['user3_user']: {
+            'nome_exibicao': st.secrets['auth']['user3_name'],
+            'senha': st.secrets['auth']['user3_password'],
+            'perfil': 'user'
+        },
+    }
 
-    user_user = st.secrets['auth']['user_user']
-    user_name = st.secrets['auth']['user_name']
-    user_password = st.secrets['auth']['user_password']
-
-    if username == admin_user and password == admin_password:
-        return {'username': admin_user, 'nome_exibicao': admin_name, 'perfil': 'admin'}
-    if username == user_user and password == user_password:
-        return {'username': user_user, 'nome_exibicao': user_name, 'perfil': 'user'}
+    user = usuarios.get(username)
+    if user and password == user['senha']:
+        return {
+            'username': username,
+            'nome_exibicao': user['nome_exibicao'],
+            'perfil': user['perfil']
+        }
     return None
 
 def salvar_historico(resultado, usuario, perfil, empresa, arquivo_omie, arquivo_pref):
