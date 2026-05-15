@@ -4,6 +4,7 @@ import io
 import unicodedata
 import requests
 from datetime import datetime, timezone
+import plotly
 
 st.set_page_config(page_title="CONCILIA PREFEITURA", page_icon="🔍", layout="wide")
 
@@ -447,6 +448,39 @@ if aba == 'Conciliação':
         pct = int((ok / total) * 100) if total > 0 else 0
         st.markdown(f"<br>**Taxa de conciliação: {pct}%**", unsafe_allow_html=True)
         st.progress(pct / 100)
+
+                # ── GRÁFICO DE RESUMO ──
+        st.divider()
+        import plotly.graph_objects as go
+        
+        labels = ['Conciliadas', 'Divergência de Valor', 'Ausente na Pref.', 'Ausente no OMIE']
+        values = [ok, div_val, aus_pref, aus_omie]
+        cores  = ['#28a745', '#fd7e14', '#dc3545', '#ffc107']
+        
+        fig = go.Figure(data=[go.Bar(
+            x=labels,
+            y=values,
+            marker_color=cores,
+            text=values,
+            textposition='outside',
+            textfont=dict(size=16, color='white'),
+        )])
+        
+        fig.update_layout(
+            title=dict(text='Distribuição das NFEs', font=dict(size=18)),
+            yaxis=dict(title='Quantidade', gridcolor='rgba(255,255,255,0.1)'),
+            xaxis=dict(title=''),
+            plot_bgcolor='rgba(0,0,0,0)',
+            paper_bgcolor='rgba(0,0,0,0)',
+            font=dict(color='white'),
+            height=380,
+            margin=dict(t=50, b=30),
+            showlegend=False,
+        )
+        
+        st.plotly_chart(fig, use_container_width=True)
+        st.progress(pct / 100)
+
 
         st.divider()
         st.subheader('🔎 Detalhamento das NFEs')
