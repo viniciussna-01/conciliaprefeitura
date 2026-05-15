@@ -369,43 +369,41 @@ if not st.session_state['logado']:
     st.markdown('Acesse com seu usuário para usar o sistema.')
 
     with st.form('login_form'):
-    
+
         usuarios_disponiveis = [
             st.secrets['auth']['admin_user'],
             st.secrets['auth']['daniela_user'],
             st.secrets['auth']['victor_user'],
             st.secrets['auth']['suelen_user'],
         ]
-    
+
         username = st.selectbox(
             'Selecione o usuário',
             usuarios_disponiveis
         )
-    
-        password = st.text_input('Senha', type='password')
-    
+
+        password = st.text_input(
+            'Senha',
+            type='password'
+        )
+
         submit = st.form_submit_button(
             'Entrar',
             use_container_width=True
         )
-    
+
     if submit:
+
         user = autenticar(username, password)
 
-    if user:
-        st.session_state['logado'] = True
-        st.session_state['usuario'] = user['username']
-        st.session_state['nome_exibicao'] = user['nome_exibicao']
-        st.session_state['perfil'] = user['perfil']
-        st.rerun()
-    else:
-        st.error('Usuário ou senha inválidos.')
         if user:
             st.session_state['logado'] = True
             st.session_state['usuario'] = user['username']
             st.session_state['nome_exibicao'] = user['nome_exibicao']
             st.session_state['perfil'] = user['perfil']
+
             st.rerun()
+
         else:
             st.error('Usuário ou senha inválidos.')
 
